@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-deepspace-900 text-gray-300 font-sans antialiased;
+    margin: 0;
+    overflow: hidden;
+  }
+}
+
+/* Custom Scrollbar for IDE feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #15161a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d2e36;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f404a;
+}

@@ -1,0 +1,20 @@
+[package]
+name = "morphism-qemu-sim"
+version = "0.1.0"
+edition = "2021"
+
+[profile.dev]
+panic = "abort"
+lto = true
+
+[profile.release]
+panic = "abort"
+lto = true
+
+[dependencies]
+panic-halt = "0.2.0"
+
+[[bin]]
+name = "morphism-qemu-sim"
+test = false
+bench = false
