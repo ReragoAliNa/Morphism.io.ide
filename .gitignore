@@ -32,7 +32,17 @@ morphism-qemu-sim/target/
 morphism-core/target/
 morphism-core/pkg/
 
-# Executables
+# Executables & Binaries
 *.exe
 *.o
 *.ld.map
+rustup-init.exe
+
+# Agent & Temp directories
+.agent/
+%TEMP%/
+src-tauri/target/
+.npm-cache/
+temp_dist/
+debug_build.js
+

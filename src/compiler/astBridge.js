@@ -42,11 +42,15 @@ export function buildAstFromGraph(graphData) {
     if (!nodeMap.has(nid)) return null;
     const node = nodeMap.get(nid);
 
-    if (node.isLeaf || (!node.left && !node.right)) {
+    // 严格判断叶节点：优先使用 isLeaf 属性，fallback 到无子节点判断
+    const isLeaf = node.isLeaf === true || (node.isLeaf === undefined && !node.left && !node.right);
+
+    if (isLeaf) {
       return {
         type: 'Leaf',
         id: node.id,
-        symbol: node.name.replace('Symbol: ', '').trim(),
+        // 如果没有 symbol 字段，则使用 name 或 id 作为 symbol
+        symbol: (node.symbol || node.name || node.id).replace('Symbol: ', '').trim(),
         probability: node.p,
         path: code
       };

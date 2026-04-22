@@ -50,23 +50,38 @@ impl FieldElement {
   }
   extractSymbols(astRoot);
 
+  // Helper to ensure valid Rust identifiers
+  const sanitize = (name) => {
+    // 1. 处理常见数学符号
+    let clean = name.replace('Σ', 'Sum').replace('σ', 'Sigma');
+    // 2. 替换所有非字母数字字符为下划线
+    clean = clean.replace(/[^a-zA-Z0-9_]/g, '_');
+    // 3. 连续下划线合并为一个
+    clean = clean.replace(/__+/g, '_');
+    // 4. 去除首尾下划线
+    clean = clean.replace(/^_+|_+$/g, '');
+    // 5. 确保不以数字开头
+    if (/^[0-9]/.test(clean)) clean = 'S_' + clean;
+    // 6. 兜底
+    return clean || 'UnknownSymbol';
+  };
+
+  console.log('Compiler: Sanitizing symbols...', symbols.map(s => ({ original: s.symbol, sanitized: sanitize(s.symbol) })));
+
   // Generate Enum
   let enumDef = `#[derive(Debug, Clone, Copy, PartialEq)]\npub enum SourceSymbol {\n`;
   symbols.forEach(sym => {
-    enumDef += `    ${sym.symbol},\n`;
+    enumDef += `    ${sanitize(sym.symbol)},\n`;
   });
   enumDef += `    DecodeError,\n}\n`;
 
   // Generate State Machine / Lookup Table
-  // Since Huffman is prefix-free, we can model a bitstream reader match
   let decoderMatches = ``;
   
   symbols.forEach(sym => {
-      // In Rust, binary literals like 0b101 can be used, but since length matters, 
-      // let's match on a slice of bools or a static sliding window. 
-      // For this bare-metal MVP, demonstrating the O(1) pattern matching based on path.
+      const safeName = sanitize(sym.symbol);
       decoderMatches += `            [${sym.path.split('').map(c => c === '1' ? 'true' : 'false').join(', ')}, ..] => {\n`;
-      decoderMatches += `                (SourceSymbol::${sym.symbol}, ${sym.path.length})\n`;
+      decoderMatches += `                (SourceSymbol::${safeName}, ${sym.path.length})\n`;
       decoderMatches += `            },\n`;
   });
 

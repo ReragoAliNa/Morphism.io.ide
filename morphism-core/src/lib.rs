@@ -6,7 +6,8 @@ pub struct WasmNode {
     pub id: String,
     pub name: String,
     pub p: f64,
-    pub isLeaf: bool,
+    #[serde(rename = "isLeaf")]
+    pub is_leaf: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -20,8 +21,10 @@ pub struct WasmLink {
 pub struct GraphTopology {
     pub nodes: Vec<WasmNode>,
     pub links: Vec<WasmLink>,
-    pub layoutMode: String,
-    pub engineName: String,
+    #[serde(rename = "layoutMode")]
+    pub layout_mode: String,
+    #[serde(rename = "engineName")]
+    pub engine_name: String,
 }
 
 struct InternalNode {
@@ -99,7 +102,7 @@ pub fn generate_huffman_topology(probs_val: JsValue) -> Result<JsValue, JsValue>
             id: n.id.clone(),
             name: if n.is_leaf { format!("Symbol: {}", n.symbol) } else { if n.id == "root" { "Root".to_string() } else { n.id.to_uppercase() } },
             p: n.prob,
-            isLeaf: n.is_leaf,
+            is_leaf: n.is_leaf,
         });
         
         if let Some(ref left_target) = n.left {
@@ -121,8 +124,8 @@ pub fn generate_huffman_topology(probs_val: JsValue) -> Result<JsValue, JsValue>
     let topo = GraphTopology {
         nodes: export_nodes,
         links: export_links,
-        layoutMode: "dag".to_string(),
-        engineName: "WASM Huffman Engine".to_string(),
+        layout_mode: "dag".to_string(),
+        engine_name: "WASM Huffman Engine".to_string(),
     };
 
     Ok(serde_wasm_bindgen::to_value(&topo)?)

@@ -6,16 +6,29 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['IBM Plex Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
       colors: {
-        deepspace: {
-          900: '#0b0c10', // Deepest background
-          800: '#15161a', // Sidebar background
-          700: '#1f2026', // Panel borders / slight highlights
-        },
-        syntax: {
-          green: '#4ade80', // Matrix green for success/highlight
-          purple: '#c084fc', // Math models accent
-        }
+        // OLED-optimized neutral palette
+        bg:      '#0A0A0B',
+        surface: '#141416',
+        border:  '#1F1F22',
+        hover:   '#27272A',
+        // Text
+        'text-primary':  '#E4E4E7',
+        'text-secondary': '#A1A1AA',
+        'text-muted':    '#71717A',
+        'text-faint':    '#3F3F46',
+        // Accent
+        primary: '#22C55E',
+      },
+      borderRadius: {
+        DEFAULT: '0px',
+      },
+      spacing: {
+        'unit': '8px',
       }
     },
   },
