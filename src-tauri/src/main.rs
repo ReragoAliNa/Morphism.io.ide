@@ -34,20 +34,18 @@ fn compile_rust(code: String) -> Result<CompileResult, String> {
        .arg("-o").arg(&out_file)
        .arg(&src_file);
 
-    // Ensure .cargo/bin is in PATH for Windows users
-    #[cfg(target_os = "windows")]
-    {
-        if let Some(home) = std::env::var_os("USERPROFILE") {
-            let mut bin_path = PathBuf::from(home);
-            bin_path.push(".cargo");
-            bin_path.push("bin");
-            
-            if let Some(path) = std::env::var_os("PATH") {
-                let mut paths = std::env::split_paths(&path).collect::<Vec<_>>();
-                paths.insert(0, bin_path); // Priority to cargo bin
-                let new_path = std::env::join_paths(paths).unwrap();
-                cmd.env("PATH", new_path);
-            }
+    // Ensure .cargo/bin is in PATH for users
+    let home_var = if cfg!(target_os = "windows") { "USERPROFILE" } else { "HOME" };
+    if let Some(home) = std::env::var_os(home_var) {
+        let mut bin_path = PathBuf::from(home);
+        bin_path.push(".cargo");
+        bin_path.push("bin");
+        
+        if let Some(path) = std::env::var_os("PATH") {
+            let mut paths = std::env::split_paths(&path).collect::<Vec<_>>();
+            paths.insert(0, bin_path); // Priority to cargo bin
+            let new_path = std::env::join_paths(paths).unwrap();
+            cmd.env("PATH", new_path);
         }
     }
 

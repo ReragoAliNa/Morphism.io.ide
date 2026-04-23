@@ -1,6 +1,6 @@
 [package]
 name = "morphism-io-ide"
-version = "0.1.0"
+version = "2.0.1"
 description = "Morphism.io IDE Desktop"
 authors = ["Antigravity"]
 edition = "2021"

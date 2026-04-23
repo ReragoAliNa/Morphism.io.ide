@@ -1,6 +1,6 @@
 {
   "productName": "Morphism IDE",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "identifier": "com.morphism.ide",
   "build": {
     "beforeDevCommand": "npm run dev",

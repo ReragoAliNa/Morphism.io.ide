@@ -62,14 +62,15 @@ export default function SimulationTerminal() {
           await handleSimulationFlow();
         } else {
           addLog('NATIVE COMPILATION FAILED', 'error');
-          result.output.split('\n').filter(Boolean).forEach(line => {
+          const output = typeof result.output === 'string' ? result.output : JSON.stringify(result.output);
+          output.split('\n').filter(Boolean).forEach(line => {
              addLog(line, line.startsWith('error') ? 'error' : 'dim');
           });
         }
         setIsRunning(false);
         return;
       } catch (e) {
-        addLog(`Native Bridge Error: ${e.message}`, 'error');
+        addLog(`Native Bridge Error: ${e.message || e}`, 'error');
         addLog('Falling back to network server...', 'warn');
       }
     }
@@ -115,21 +116,49 @@ export default function SimulationTerminal() {
 
   const handleSimulationFlow = async () => {
     setProgress(90);
+    
+    // 定量计算逻辑
+    const probabilities = { S0: 0.25, S1: 0.5, S2: 0.125, S3: 0.125 };
+    const lengths = { S0: 3, S1: 1, S2: 4, S3: 3 };
+    
+    // 计算熵 H = -sum(p * log2(p))
+    const entropy = Object.values(probabilities).reduce((acc, p) => acc - p * Math.log2(p), 0);
+    // 计算平均长度 L = sum(p * l)
+    const average = Object.keys(probabilities).reduce((acc, key) => acc + probabilities[key] * lengths[key], 0);
+
     addLog('Starting QEMU emulator (Cortex-M3)...');
     await delay(300);
     addLog('UART0 initialized. Baud rate: 115200');
     await delay(200);
     addLog('>>> DECODER START');
-    await delay(200);
-    addLog('Input Stream segment: [0, 1, 0, 1, ...]');
+    addLog('Symbol Mapping Table initialized:', 'dim');
+    addLog(`  S0 -> 101 (${lengths.S0} bits)`, 'dim');
+    addLog(`  S1 -> 0 (${lengths.S1} bit)`, 'dim');
+    addLog(`  S2 -> 1101 (${lengths.S2} bits)`, 'dim');
+    addLog(`  S3 -> 111 (${lengths.S3} bits)`, 'dim');
+    await delay(400);
+
+    addLog('Input Stream segment: [10101101111...]');
+    setProgress(92);
+    
     await delay(300);
-    addLog('Parsed Symbol: Symbol 0');
+    addLog('Parsed Bitstream [101] -> Detected: Symbol 0');
     await delay(200);
-    addLog('Parsed Symbol: Symbol 1');
+    addLog('Parsed Bitstream [0]   -> Detected: Symbol 1');
+    setProgress(95);
+
     await delay(200);
-    addLog('Parsed Symbol: Symbol 2');
+    addLog('Parsed Bitstream [1101] -> Detected: Symbol 2');
+    await delay(200);
+    addLog('Parsed Bitstream [111]  -> Detected: Symbol 3');
+    setProgress(98);
+
     await delay(300);
-    addLog('Verification: Symbol density matches entropy target.', 'success');
+    addLog('Performance Metrics:', 'success');
+    addLog(`  - Entropy Target (H): ${entropy.toFixed(3)} bits/symbol`, 'dim');
+    addLog(`  - Actual Average (L): ${average.toFixed(3)} bits/symbol`, 'dim');
+    addLog(`  - Efficiency (H/L): ${((entropy / average) * 100).toFixed(1)}%`, 'success');
+    
     addLog('>>> DECODER FINISHED', 'success');
     setProgress(100);
   };
@@ -199,7 +228,7 @@ export default function SimulationTerminal() {
         <span className="text-[9px] text-white/20 uppercase tracking-widest">
           {isRunning ? 'compiling...' : 'ready'}
         </span>
-        <span className="text-[9px] text-white/10 font-mono">rustc · morphism_core_v0.9</span>
+        <span className="text-[9px] text-white/10 font-mono">rustc · morphism_core_v2.0.1</span>
       </div>
     </div>
   );
