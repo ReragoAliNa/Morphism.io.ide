@@ -1,7 +1,7 @@
 [package]
-name = "morphism-qemu-sim"
+name = "morphism-sim"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [profile.dev]
 panic = "abort"
@@ -15,6 +15,6 @@ lto = true
 panic-halt = "0.2.0"
 
 [[bin]]
-name = "morphism-qemu-sim"
+name = "morphism-sim"
 test = false
 bench = false

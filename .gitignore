@@ -28,7 +28,7 @@ target/
 pkg/
 Cargo.lock
 debug/
-morphism-qemu-sim/target/
+morphism-sim/target/
 morphism-core/target/
 morphism-core/pkg/
 
